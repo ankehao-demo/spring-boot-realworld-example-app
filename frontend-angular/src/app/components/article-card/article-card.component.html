@@ -1,0 +1,43 @@
+<div class="border-t border-gray-200 py-6">
+  <div class="flex justify-between items-start mb-4">
+    <div class="flex items-center">
+      <a [routerLink]="['/profile', article.author.username]">
+        <img [src]="article.author.image || defaultImage" [alt]="article.author.username" class="w-8 h-8 rounded-full mr-2" />
+      </a>
+      <div>
+        <a [routerLink]="['/profile', article.author.username]" class="text-green-500 font-medium hover:underline">
+          {{ article.author.username }}
+        </a>
+        <p class="text-gray-400 text-sm">{{ formatDate(article.createdAt) }}</p>
+      </div>
+    </div>
+
+    @if (authService.currentUser) {
+      <button
+        (click)="handleFavorite($event)"
+        [disabled]="isLoading"
+        [class]="'flex items-center px-2 py-1 text-sm border rounded ' +
+          (article.favorited ? 'bg-green-500 text-white border-green-500' : 'text-green-500 border-green-500 hover:bg-green-500 hover:text-white') +
+          (isLoading ? ' opacity-50 cursor-not-allowed' : '')">
+        <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+          <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+        </svg>
+        {{ article.favoritesCount }}
+      </button>
+    }
+  </div>
+
+  <a [routerLink]="['/article', article.slug]" class="block">
+    <h2 class="text-xl font-semibold text-gray-900 mb-2 hover:text-gray-700">{{ article.title }}</h2>
+    <p class="text-gray-600 mb-4">{{ article.description }}</p>
+  </a>
+
+  <div class="flex justify-between items-center">
+    <a [routerLink]="['/article', article.slug]" class="text-gray-400 text-sm hover:text-gray-600">Read more...</a>
+    <div class="flex flex-wrap gap-1">
+      @for (tag of article.tagList; track tag) {
+        <span class="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full">{{ tag }}</span>
+      }
+    </div>
+  </div>
+</div>

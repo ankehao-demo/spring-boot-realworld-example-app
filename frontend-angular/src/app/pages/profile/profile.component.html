@@ -1,0 +1,62 @@
+@if (!profile) {
+  <div class="text-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+  </div>
+} @else {
+  <div>
+    <div class="bg-gray-100 py-8">
+      <div class="max-w-4xl mx-auto px-4 text-center">
+        <img [src]="profile.image || defaultImage" [alt]="profile.username" class="w-24 h-24 rounded-full mx-auto mb-4" />
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ profile.username }}</h1>
+        @if (profile.bio) {
+          <p class="text-gray-600 mb-4">{{ profile.bio }}</p>
+        }
+        @if (authService.currentUser) {
+          <div>
+            @if (isOwnProfile) {
+              <a routerLink="/settings" class="px-4 py-2 border border-gray-400 text-gray-400 rounded hover:bg-gray-400 hover:text-gray-800">
+                Edit Profile Settings
+              </a>
+            } @else {
+              <button
+                (click)="handleFollow()"
+                [disabled]="isFollowLoading"
+                class="px-4 py-2 border border-gray-400 text-gray-400 rounded hover:bg-gray-400 hover:text-gray-800">
+                {{ profile.following ? 'Unfollow' : 'Follow' }} {{ profile.username }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="flex border-b mb-6">
+        <button
+          (click)="setActiveTab('articles')"
+          [class]="'px-4 py-2 ' + (activeTab === 'articles' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-700')">
+          My Articles
+        </button>
+        <button
+          (click)="setActiveTab('favorites')"
+          [class]="'px-4 py-2 ' + (activeTab === 'favorites' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-700')">
+          Favorited Articles
+        </button>
+      </div>
+
+      @if (isLoading) {
+        <div class="text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+        </div>
+      } @else if (articles.length === 0) {
+        <div class="text-center py-8 text-gray-500">No articles are here... yet.</div>
+      } @else {
+        <div>
+          @for (article of articles; track article.slug) {
+            <app-article-card [article]="article" (updated)="onArticleUpdate($event)" />
+          }
+        </div>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,80 @@
+@if (isLoading) {
+  <div class="text-center py-8">
+    <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+  </div>
+} @else if (!article) {
+  <div class="text-center py-8">
+    <h1 class="text-2xl font-bold text-gray-900">Article not found</h1>
+  </div>
+} @else {
+  <div>
+    <div class="bg-gray-800 text-white py-8">
+      <div class="max-w-4xl mx-auto px-4">
+        <h1 class="text-4xl font-bold mb-4">{{ article.title }}</h1>
+        <div class="flex items-center justify-between">
+          <div class="flex items-center">
+            <a [routerLink]="['/profile', article.author.username]">
+              <img [src]="article.author.image || defaultImage" [alt]="article.author.username" class="w-8 h-8 rounded-full mr-2" />
+            </a>
+            <div>
+              <a [routerLink]="['/profile', article.author.username]" class="text-white hover:underline">
+                {{ article.author.username }}
+              </a>
+              <p class="text-gray-300 text-sm">{{ formatDate(article.createdAt) }}</p>
+            </div>
+          </div>
+
+          @if (authService.currentUser) {
+            <div class="flex items-center space-x-2">
+              @if (isAuthor) {
+                <a [routerLink]="['/editor', article.slug]" class="px-4 py-2 border border-gray-400 text-gray-400 rounded hover:bg-gray-400 hover:text-gray-800">
+                  Edit Article
+                </a>
+                <button (click)="handleDelete()" class="px-4 py-2 border border-red-500 text-red-500 rounded hover:bg-red-500 hover:text-white">
+                  Delete Article
+                </button>
+              } @else {
+                <button
+                  (click)="handleFollow()"
+                  [disabled]="isFollowLoading"
+                  class="px-4 py-2 border border-gray-400 text-gray-400 rounded hover:bg-gray-400 hover:text-gray-800">
+                  {{ isFollowing ? 'Unfollow' : 'Follow' }} {{ article.author.username }}
+                </button>
+                <button
+                  (click)="handleFavorite()"
+                  class="px-4 py-2 border border-green-500 text-green-500 rounded hover:bg-green-500 hover:text-white flex items-center">
+                  <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
+                  </svg>
+                  Favorite Article ({{ article.favoritesCount }})
+                </button>
+              }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+      <div class="prose max-w-none mb-8">
+        <p class="text-lg text-gray-600 mb-6">{{ article.description }}</p>
+        <div class="whitespace-pre-wrap text-gray-800">{{ article.body }}</div>
+      </div>
+
+      @if (article.tagList.length > 0) {
+        <div class="flex flex-wrap gap-1 mb-8">
+          @for (tag of article.tagList; track tag) {
+            <span class="px-2 py-1 text-xs bg-gray-200 text-gray-600 rounded-full">{{ tag }}</span>
+          }
+        </div>
+      }
+
+      <hr class="my-8" />
+
+      <div class="space-y-6">
+        <app-comment-form (submitComment)="onCommentSubmit($event)" />
+        <app-comment-list [comments]="comments" (deleteComment)="onCommentDelete($event)" />
+      </div>
+    </div>
+  </div>
+}
