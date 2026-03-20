@@ -2,6 +2,7 @@ package io.spring.infrastructure.service;
 
 import io.spring.core.service.JwtService;
 import io.spring.core.user.User;
+import java.util.Collections;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -13,8 +14,9 @@ public class DefaultJwtServiceTest {
 
   @BeforeEach
   public void setUp() {
-    jwtService =
-        new DefaultJwtService("123123123123123123123123123123123123123123123123123123123123", 3600);
+    // Generate a test secret that meets the 64-byte minimum for HS512
+    String testSecret = String.join("", Collections.nCopies(9, "test-key"));
+    jwtService = new DefaultJwtService(testSecret, 3600);
   }
 
   @Test
