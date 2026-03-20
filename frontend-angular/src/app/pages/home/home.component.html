@@ -1,0 +1,50 @@
+<div class="max-w-6xl mx-auto px-4 py-8">
+  <div class="bg-green-500 text-white text-center py-16 mb-8 rounded-lg">
+    <h1 class="text-5xl font-bold mb-4">conduit</h1>
+    <p class="text-xl">A place to share your knowledge.</p>
+  </div>
+
+  <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+    <div class="lg:col-span-3">
+      <div class="flex border-b mb-6">
+        @if (authService.currentUser) {
+          <button
+            (click)="setActiveTab('feed')"
+            [class]="'px-4 py-2 ' + (activeTab === 'feed' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-700')">
+            Your Feed
+          </button>
+        }
+        <button
+          (click)="setActiveTab('global')"
+          [class]="'px-4 py-2 ' + (activeTab === 'global' ? 'text-green-500 border-b-2 border-green-500' : 'text-gray-500 hover:text-gray-700')">
+          Global Feed
+        </button>
+        @if (selectedTag) {
+          <button
+            (click)="selectedTag = ''; loadArticles()"
+            class="px-4 py-2 text-green-500 border-b-2 border-green-500">
+            #{{ selectedTag }}
+          </button>
+        }
+      </div>
+
+      @if (isLoading) {
+        <div class="text-center py-8">
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+        </div>
+      } @else if (articles.length === 0) {
+        <div class="text-center py-8 text-gray-500">No articles are here... yet.</div>
+      } @else {
+        <div>
+          @for (article of articles; track article.slug) {
+            <app-article-card [article]="article" (updated)="onArticleUpdate($event)" />
+          }
+        </div>
+      }
+    </div>
+
+    <div class="lg:col-span-1">
+      <app-tag-list [tags]="tags" [selectedTag]="selectedTag" (tagSelect)="onTagSelect($event)" />
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="bg-gray-100 rounded p-4">
+  <h3 class="text-sm font-medium text-gray-900 mb-3">Popular Tags</h3>
+  @if (tags.length === 0) {
+    <p class="text-gray-500 text-sm">No tags available</p>
+  } @else {
+    <div class="flex flex-wrap gap-1">
+      @for (tag of tags; track tag) {
+        <button
+          (click)="onTagSelect(tag)"
+          [class]="'px-2 py-1 text-xs rounded-full transition-colors ' +
+            (selectedTag === tag ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300')">
+          {{ tag }}
+        </button>
+      }
+    </div>
+  }
+</div>
