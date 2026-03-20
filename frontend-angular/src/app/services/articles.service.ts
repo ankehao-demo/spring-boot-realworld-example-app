@@ -17,8 +17,8 @@ export class ArticlesService {
     if (params.tag) httpParams = httpParams.set('tag', params.tag);
     if (params.author) httpParams = httpParams.set('author', params.author);
     if (params.favorited) httpParams = httpParams.set('favorited', params.favorited);
-    if (params.limit) httpParams = httpParams.set('limit', params.limit.toString());
-    if (params.offset) httpParams = httpParams.set('offset', params.offset.toString());
+    if (params.limit != null) httpParams = httpParams.set('limit', params.limit.toString());
+    if (params.offset != null) httpParams = httpParams.set('offset', params.offset.toString());
 
     return this.http.get<ArticlesResponse>(`${this.apiUrl}/articles`, { params: httpParams });
   }

@@ -1,4 +1,4 @@
-import { Component, Output, EventEmitter } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -10,10 +10,10 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './comment-form.component.html'
 })
 export class CommentFormComponent {
+  @Input() isSubmitting = false;
   @Output() submitComment = new EventEmitter<string>();
 
   body = '';
-  isSubmitting = false;
 
   constructor(public authService: AuthService) {}
 
@@ -23,10 +23,7 @@ export class CommentFormComponent {
 
   onSubmit(): void {
     if (!this.body.trim() || this.isSubmitting) return;
-
-    this.isSubmitting = true;
     this.submitComment.emit(this.body);
     this.body = '';
-    this.isSubmitting = false;
   }
 }

@@ -72,7 +72,7 @@
       <hr class="my-8" />
 
       <div class="space-y-6">
-        <app-comment-form (submitComment)="onCommentSubmit($event)" />
+        <app-comment-form [isSubmitting]="isCommentSubmitting" (submitComment)="onCommentSubmit($event)" />
         <app-comment-list [comments]="comments" (deleteComment)="onCommentDelete($event)" />
       </div>
     </div>

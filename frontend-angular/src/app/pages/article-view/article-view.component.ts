@@ -21,6 +21,7 @@ export class ArticleViewComponent implements OnInit {
   isLoading = true;
   isFollowing = false;
   isFollowLoading = false;
+  isCommentSubmitting = false;
 
   constructor(
     private articlesService: ArticlesService,
@@ -113,9 +114,16 @@ export class ArticleViewComponent implements OnInit {
 
   onCommentSubmit(body: string): void {
     if (!this.article) return;
+    this.isCommentSubmitting = true;
     this.commentsService.addComment(this.article.slug, body).subscribe({
-      next: (comment) => this.comments = [comment, ...this.comments],
-      error: (err) => console.error('Error adding comment:', err)
+      next: (comment) => {
+        this.comments = [comment, ...this.comments];
+        this.isCommentSubmitting = false;
+      },
+      error: (err) => {
+        console.error('Error adding comment:', err);
+        this.isCommentSubmitting = false;
+      }
     });
   }
 
