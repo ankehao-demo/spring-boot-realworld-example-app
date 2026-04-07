@@ -5,12 +5,14 @@ import io.spring.application.Page;
 import io.spring.application.article.ArticleCommandService;
 import io.spring.application.article.NewArticleParam;
 import io.spring.core.article.Article;
+import io.spring.core.article.ArticleRepository;
 import io.spring.core.user.User;
 import java.util.HashMap;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ArticlesApi {
   private ArticleCommandService articleCommandService;
   private ArticleQueryService articleQueryService;
+  private ArticleRepository articleRepository;
 
   @PostMapping
   public ResponseEntity createArticle(
@@ -56,5 +59,11 @@ public class ArticlesApi {
     return ResponseEntity.ok(
         articleQueryService.findRecentArticles(
             tag, author, favoritedBy, new Page(offset, limit), user));
+  }
+
+  @DeleteMapping
+  public ResponseEntity deleteAllArticles(@AuthenticationPrincipal User user) {
+    articleRepository.removeAll();
+    return ResponseEntity.noContent().build();
   }
 }

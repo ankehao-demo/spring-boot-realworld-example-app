@@ -16,6 +16,7 @@ import io.spring.application.article.ArticleCommandService;
 import io.spring.application.data.ArticleData;
 import io.spring.application.data.ProfileData;
 import io.spring.core.article.Article;
+import io.spring.core.article.ArticleRepository;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,8 @@ public class ArticlesApiTest extends TestWithCurrentUser {
   @MockBean private ArticleQueryService articleQueryService;
 
   @MockBean private ArticleCommandService articleCommandService;
+
+  @MockBean private ArticleRepository articleRepository;
 
   @Override
   @BeforeEach
