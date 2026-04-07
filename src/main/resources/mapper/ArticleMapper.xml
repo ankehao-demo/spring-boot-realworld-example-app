@@ -32,6 +32,9 @@
     <delete id="delete">
         delete from articles where id = #{id}
     </delete>
+    <delete id="deleteAll">
+        delete from articles
+    </delete>
     <sql id="selectArticle">
         select
         A.id articleId,

@@ -4,6 +4,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static io.spring.TestHelper.articleDataFixture;
 import static java.util.Arrays.asList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import io.restassured.module.mockmvc.RestAssuredMockMvc;
@@ -71,5 +72,25 @@ public class ListArticleApiTest extends TestWithCurrentUser {
         .prettyPeek()
         .then()
         .statusCode(200);
+  }
+
+  @Test
+  public void should_delete_all_articles_success() throws Exception {
+    given()
+        .header("Authorization", "Token " + token)
+        .when()
+        .delete("/articles")
+        .then()
+        .statusCode(204);
+
+    verify(articleRepository).removeAll();
+  }
+
+  @Test
+  public void should_fail_delete_all_articles_without_auth() throws Exception {
+    RestAssuredMockMvc.when()
+        .delete("/articles")
+        .then()
+        .statusCode(401);
   }
 }
