@@ -37,7 +37,7 @@ JAVA_HOME=/usr/lib/jvm/java-21-openjdk-amd64 ./gradlew clean compileJava 2>&1 | 
 
 These are the dominant error class. Spring Boot 3.x requires Jakarta EE 9+ which renamed all `javax.*` packages to `jakarta.*`.
 
-#### 1a. `javax.validation` → `jakarta.validation` (54 errors)
+#### 1a. `javax.validation` → `jakarta.validation` (74 errors)
 
 | # | File | Line | Import / Symbol |
 |---|---|---|---|
