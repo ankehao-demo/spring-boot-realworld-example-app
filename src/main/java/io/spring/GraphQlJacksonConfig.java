@@ -1,11 +1,11 @@
 package io.spring;
 
+import com.fasterxml.jackson.annotation.JsonRootName;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.Map;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -13,63 +13,65 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configures a custom Jackson HttpMessageConverter for the GraphQL endpoint. The global
- * ObjectMapper has UNWRAP_ROOT_VALUE=true (required by the REST API's @JsonRootName DTOs), but this
- * breaks GraphQL request deserialization which reads Map&lt;String, Object&gt;. This config adds a
- * Map-only converter without UNWRAP_ROOT_VALUE at the start of the converter chain so GraphQL works
- * while REST endpoints remain unaffected.
+ * Configures Jackson HTTP message converters so that REST API DTOs annotated with {@link
+ * JsonRootName} are deserialized with {@code UNWRAP_ROOT_VALUE} enabled, while all other types
+ * (including GraphQL's {@code Map<String, Object>} request body) use the default ObjectMapper
+ * without root-value unwrapping.
+ *
+ * <p>The global {@code spring.jackson.deserialization.UNWRAP_ROOT_VALUE} property is intentionally
+ * NOT set in {@code application.properties} because it would break GraphQL request deserialization.
+ * This config provides the equivalent behaviour only for the types that need it.
  */
 @Configuration
 public class GraphQlJacksonConfig implements WebMvcConfigurer {
 
   @Override
   public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
-    ObjectMapper graphQlMapper = null;
+    ObjectMapper unwrapMapper = null;
     for (HttpMessageConverter<?> converter : converters) {
       if (converter instanceof MappingJackson2HttpMessageConverter jacksonConverter) {
-        graphQlMapper = jacksonConverter.getObjectMapper().copy();
-        graphQlMapper.disable(DeserializationFeature.UNWRAP_ROOT_VALUE);
+        unwrapMapper = jacksonConverter.getObjectMapper().copy();
+        unwrapMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
         break;
       }
     }
-    if (graphQlMapper == null) {
-      graphQlMapper = new ObjectMapper();
+    if (unwrapMapper == null) {
+      unwrapMapper = new ObjectMapper();
+      unwrapMapper.enable(DeserializationFeature.UNWRAP_ROOT_VALUE);
     }
 
-    MappingJackson2HttpMessageConverter graphQlConverter =
-        new MapOnlyJackson2HttpMessageConverter(graphQlMapper);
-    converters.add(0, graphQlConverter);
+    converters.add(0, new JsonRootNameAwareConverter(unwrapMapper));
   }
 
   /**
-   * A Jackson HTTP message converter that only handles Map types for reading. This ensures it
-   * intercepts GraphQL request body deserialization (Map&lt;String, Object&gt;) but does not
-   * interfere with REST DTO deserialization (@JsonRootName types like RegisterParam, LoginParam,
-   * etc.).
+   * A Jackson HTTP message converter that only handles types annotated with {@link JsonRootName}
+   * for reading. This ensures REST API DTOs (RegisterParam, LoginParam, etc.) get {@code
+   * UNWRAP_ROOT_VALUE} behaviour, while GraphQL requests ({@code Map<String, Object>}) fall through
+   * to the default converter which does NOT unwrap root values.
    */
-  private static class MapOnlyJackson2HttpMessageConverter
-      extends MappingJackson2HttpMessageConverter {
+  private static class JsonRootNameAwareConverter extends MappingJackson2HttpMessageConverter {
 
-    MapOnlyJackson2HttpMessageConverter(ObjectMapper objectMapper) {
+    JsonRootNameAwareConverter(ObjectMapper objectMapper) {
       super(objectMapper);
     }
 
     @Override
     public boolean canRead(Class<?> clazz, MediaType mediaType) {
-      return Map.class.isAssignableFrom(clazz) && super.canRead(clazz, mediaType);
+      return clazz.isAnnotationPresent(JsonRootName.class) && super.canRead(clazz, mediaType);
     }
 
     @Override
     public boolean canRead(Type type, Class<?> contextClass, MediaType mediaType) {
       Class<?> rawType = resolveRawType(type);
       return rawType != null
-          && Map.class.isAssignableFrom(rawType)
+          && rawType.isAnnotationPresent(JsonRootName.class)
           && super.canRead(type, contextClass, mediaType);
     }
 
     @Override
     public boolean canWrite(Class<?> clazz, MediaType mediaType) {
-      // Don't interfere with response serialization; let the default converter handle it
+      // REST responses are wrapped manually (e.g. UsersApi.userResponse()),
+      // so this converter should not interfere with serialization.
       return false;
     }
 
