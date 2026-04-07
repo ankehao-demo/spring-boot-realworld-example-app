@@ -90,6 +90,11 @@ export const articlesApi = {
     const response = await api.delete(`/articles/${slug}/favorite`);
     return (response.data as any).article;
   },
+
+  bulkCreateArticles: async (articles: NewArticle[]): Promise<{ articlesCount: number }> => {
+    const response = await api.post('/articles/bulk', { articles: { articles } });
+    return response.data as { articlesCount: number };
+  },
 };
 
 export const commentsApi = {

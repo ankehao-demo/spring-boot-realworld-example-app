@@ -153,6 +153,59 @@ public class ArticlesApiTest extends TestWithCurrentUser {
         .statusCode(422);
   }
 
+  @Test
+  public void should_bulk_create_articles_success() throws Exception {
+    when(articleCommandService.createArticles(any(), any()))
+        .thenReturn(
+            List.of(
+                new Article("Title 1", "desc", "body", List.of(), user.getId()),
+                new Article("Title 2", "desc", "body", List.of(), user.getId())));
+
+    Map<String, Object> param = new HashMap<>();
+    param.put(
+        "articles",
+        Map.of(
+            "articles",
+            List.of(
+                Map.of(
+                    "title", "Title 1", "description", "desc 1", "body", "body 1", "tagList",
+                    List.of()),
+                Map.of(
+                    "title", "Title 2", "description", "desc 2", "body", "body 2", "tagList",
+                    List.of()))));
+
+    given()
+        .contentType("application/json")
+        .header("Authorization", "Token " + token)
+        .body(param)
+        .when()
+        .post("/articles/bulk")
+        .then()
+        .statusCode(201)
+        .body("articlesCount", equalTo(2));
+  }
+
+  @Test
+  public void should_fail_bulk_create_without_auth() throws Exception {
+    Map<String, Object> param = new HashMap<>();
+    param.put(
+        "articles",
+        Map.of(
+            "articles",
+            List.of(
+                Map.of(
+                    "title", "Title 1", "description", "desc 1", "body", "body 1", "tagList",
+                    List.of()))));
+
+    given()
+        .contentType("application/json")
+        .body(param)
+        .when()
+        .post("/articles/bulk")
+        .then()
+        .statusCode(401);
+  }
+
   private HashMap<String, Object> prepareParam(
       final String title, final String description, final String body, final List<String> tagList) {
     return new HashMap<String, Object>() {
