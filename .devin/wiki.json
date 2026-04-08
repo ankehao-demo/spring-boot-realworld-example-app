@@ -1,0 +1,351 @@
+{
+  "repo_notes": [
+    {
+      "content": ""
+    }
+  ],
+  "pages": [
+    {
+      "title": "Overview",
+      "purpose": "Introduce the Spring Boot RealWorld Example App, explaining its purpose as a demonstration of a production-grade backend implementation following the RealWorld specification with dual REST and GraphQL APIs",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Architecture & Design Patterns",
+      "purpose": "Explain the high-level architectural decisions including Domain-Driven Design, CQRS pattern, and the four-layer architecture that structures the application",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Domain-Driven Design (DDD)",
+      "purpose": "Detail how DDD principles are applied to separate the core business logic from infrastructure concerns, with the domain layer remaining consistent regardless of API adapter (REST or GraphQL)",
+      "parent": "Architecture & Design Patterns",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Layered Architecture",
+      "purpose": "Document the four architectural layers (API, Application, Core, Infrastructure) and their responsibilities, showing how separation of concerns is maintained",
+      "parent": "Architecture & Design Patterns",
+      "page_notes": [
+        {
+          "content": "Make sure to unpack the middleware"
+        }
+      ]
+    },
+    {
+      "title": "API Layer",
+      "purpose": "Introduce the dual API approach, explaining how both REST and GraphQL APIs expose the same underlying domain model through different adapters",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "REST API",
+      "purpose": "Document the RESTful API implementation using Spring MVC, including endpoint structure, request/response formats, and adherence to the RealWorld API specification",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Articles REST Endpoints",
+      "purpose": "Detail all article-related REST endpoints including creation, retrieval, updating, deletion, favoriting, and querying with filters and pagination",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Users REST Endpoints",
+      "purpose": "Document user registration, login, profile management, and follow/unfollow functionality through REST endpoints",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Comments REST Endpoints",
+      "purpose": "Explain comment creation, retrieval, and deletion endpoints, including authorization rules for comment management",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "GraphQL API",
+      "purpose": "Document the GraphQL API implementation using Netflix DGS framework, including schema definition, queries, mutations, and pagination",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "GraphQL Schema",
+      "purpose": "Present the complete GraphQL schema including types, queries, mutations, and input types, explaining the design decisions and how it maps to the domain model",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "GraphQL Mutations",
+      "purpose": "Detail GraphQL mutations for user management and article operations, showing how they integrate with the command services layer",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "GraphQL Queries and Data Fetchers",
+      "purpose": "Explain GraphQL query implementation including data fetchers, cursor-based pagination, and data enrichment with user context",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "GraphQL Error Handling",
+      "purpose": "Document custom exception handling in GraphQL including authentication errors, validation errors, and error response formatting",
+      "parent": "API Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Security & Authentication",
+      "purpose": "Explain the security architecture including Spring Security configuration, JWT-based authentication, and authorization mechanisms",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Security Configuration",
+      "purpose": "Detail the Spring Security setup including CORS configuration, endpoint authorization rules, and stateless session management",
+      "parent": "Security & Authentication",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "JWT Authentication",
+      "purpose": "Explain JWT token generation, validation, and the custom JwtTokenFilter that processes authentication on each request",
+      "parent": "Security & Authentication",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Password Encoding",
+      "purpose": "Document the use of BCrypt for secure password hashing and the encryption service abstraction",
+      "parent": "Security & Authentication",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Application Layer",
+      "purpose": "Describe the application services layer that orchestrates business operations and serves as the boundary between API and domain layers",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Command Services",
+      "purpose": "Detail command services that handle write operations including validation, authorization checks, and coordination with domain entities",
+      "parent": "Application Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Query Services",
+      "purpose": "Explain query services that optimize read operations, perform data enrichment, and transform domain entities into DTOs",
+      "parent": "Application Layer",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Data Persistence",
+      "purpose": "Document the persistence layer including database schema, MyBatis implementation, and the Data Mapper pattern",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Database Schema",
+      "purpose": "Present the complete database schema including all tables, relationships, and design rationale for the social blogging platform",
+      "parent": "Data Persistence",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "MyBatis Data Mapper",
+      "purpose": "Explain the MyBatis implementation including XML mapper configurations, the Data Mapper pattern, and SQL query organization",
+      "parent": "Data Persistence",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Repository Layer",
+      "purpose": "Document repository interfaces and implementations, transaction management, and the separation between command and query repositories",
+      "parent": "Data Persistence",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Database Migrations",
+      "purpose": "Explain Flyway migration setup and the versioned migration strategy for schema evolution",
+      "parent": "Data Persistence",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Build & Development",
+      "purpose": "Cover the build system, development tools, code quality enforcement, and dependency management",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Gradle Build Configuration",
+      "purpose": "Detail the Gradle build setup including dependencies, plugins (Spring Boot, DGS codegen, Spotless), and custom tasks",
+      "parent": "Build & Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Gradle Wrapper",
+      "purpose": "Explain the Gradle Wrapper mechanism that ensures consistent build environments across different systems",
+      "parent": "Build & Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Development Workflow",
+      "purpose": "Document local development setup, running the application, database configuration, and code formatting with Spotless",
+      "parent": "Build & Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Testing Strategy",
+      "purpose": "Explain the comprehensive testing approach including unit tests, integration tests, API tests, and the test infrastructure",
+      "parent": "Build & Development",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Deployment",
+      "purpose": "Cover deployment options including local execution, Docker containerization, and CI/CD pipeline",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Local Deployment",
+      "purpose": "Explain how to run the application locally using Gradle, including SQLite database setup and configuration",
+      "parent": "Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "Docker Deployment",
+      "purpose": "Document Docker image creation using Spring Boot's bootBuildImage and container execution",
+      "parent": "Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    },
+    {
+      "title": "CI/CD Pipeline",
+      "purpose": "Detail the GitHub Actions workflow for continuous integration including automated testing and build verification",
+      "parent": "Deployment",
+      "page_notes": [
+        {
+          "content": ""
+        }
+      ]
+    }
+  ]
+}
