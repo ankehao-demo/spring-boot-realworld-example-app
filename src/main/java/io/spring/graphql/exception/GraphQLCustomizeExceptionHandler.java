@@ -1,48 +1,41 @@
 package io.spring.graphql.exception;
 
-import com.netflix.graphql.dgs.exceptions.DefaultDataFetcherExceptionHandler;
-import com.netflix.graphql.types.errors.ErrorType;
-import com.netflix.graphql.types.errors.TypedGraphQLError;
 import graphql.GraphQLError;
-import graphql.execution.DataFetcherExceptionHandler;
-import graphql.execution.DataFetcherExceptionHandlerParameters;
-import graphql.execution.DataFetcherExceptionHandlerResult;
+import graphql.GraphqlErrorBuilder;
+import graphql.schema.DataFetchingEnvironment;
 import io.spring.api.exception.FieldErrorResource;
 import io.spring.api.exception.InvalidAuthenticationException;
 import io.spring.graphql.types.Error;
 import io.spring.graphql.types.ErrorItem;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import org.springframework.graphql.execution.DataFetcherExceptionResolverAdapter;
+import org.springframework.graphql.execution.ErrorType;
 import org.springframework.stereotype.Component;
 
 @Component
-public class GraphQLCustomizeExceptionHandler implements DataFetcherExceptionHandler {
-
-  private final DefaultDataFetcherExceptionHandler defaultHandler =
-      new DefaultDataFetcherExceptionHandler();
+public class GraphQLCustomizeExceptionHandler extends DataFetcherExceptionResolverAdapter {
 
   @Override
-  public DataFetcherExceptionHandlerResult onException(
-      DataFetcherExceptionHandlerParameters handlerParameters) {
-    if (handlerParameters.getException() instanceof InvalidAuthenticationException) {
+  protected List<GraphQLError> resolveToMultipleErrors(Throwable ex, DataFetchingEnvironment env) {
+    if (ex instanceof InvalidAuthenticationException) {
       GraphQLError graphqlError =
-          TypedGraphQLError.newBuilder()
-              .errorType(ErrorType.UNAUTHENTICATED)
-              .message(handlerParameters.getException().getMessage())
-              .path(handlerParameters.getPath())
+          GraphqlErrorBuilder.newError(env)
+              .errorType(ErrorType.UNAUTHORIZED)
+              .message(ex.getMessage())
               .build();
-      return DataFetcherExceptionHandlerResult.newResult().error(graphqlError).build();
-    } else if (handlerParameters.getException() instanceof ConstraintViolationException) {
+      return Collections.singletonList(graphqlError);
+    } else if (ex instanceof ConstraintViolationException) {
       List<FieldErrorResource> errors = new ArrayList<>();
       for (ConstraintViolation<?> violation :
-          ((ConstraintViolationException) handlerParameters.getException())
-              .getConstraintViolations()) {
+          ((ConstraintViolationException) ex).getConstraintViolations()) {
         FieldErrorResource fieldErrorResource =
             new FieldErrorResource(
                 violation.getRootBeanClass().getName(),
@@ -56,14 +49,14 @@ public class GraphQLCustomizeExceptionHandler implements DataFetcherExceptionHan
         errors.add(fieldErrorResource);
       }
       GraphQLError graphqlError =
-          TypedGraphQLError.newBadRequestBuilder()
-              .message(handlerParameters.getException().getMessage())
-              .path(handlerParameters.getPath())
+          GraphqlErrorBuilder.newError(env)
+              .errorType(ErrorType.BAD_REQUEST)
+              .message(ex.getMessage())
               .extensions(errorsToMap(errors))
               .build();
-      return DataFetcherExceptionHandlerResult.newResult().error(graphqlError).build();
+      return Collections.singletonList(graphqlError);
     } else {
-      return defaultHandler.onException(handlerParameters);
+      return null;
     }
   }
 
