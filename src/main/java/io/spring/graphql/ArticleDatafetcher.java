@@ -354,8 +354,7 @@ public class ArticleDatafetcher {
         .build();
   }
 
-  private io.spring.graphql.types.PageInfo buildArticlePageInfo(
-      CursorPager<ArticleData> articles) {
+  private io.spring.graphql.types.PageInfo buildArticlePageInfo(CursorPager<ArticleData> articles) {
     return io.spring.graphql.types.PageInfo.newBuilder()
         .startCursor(
             articles.getStartCursor() == null ? null : articles.getStartCursor().toString())

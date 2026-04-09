@@ -97,8 +97,7 @@ public class CommentDatafetcher {
         .build();
   }
 
-  private io.spring.graphql.types.PageInfo buildCommentPageInfo(
-      CursorPager<CommentData> comments) {
+  private io.spring.graphql.types.PageInfo buildCommentPageInfo(CursorPager<CommentData> comments) {
     return io.spring.graphql.types.PageInfo.newBuilder()
         .startCursor(
             comments.getStartCursor() == null ? null : comments.getStartCursor().toString())
