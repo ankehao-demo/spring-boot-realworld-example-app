@@ -16,6 +16,7 @@ public class User {
   private String password;
   private String bio;
   private String image;
+  private long passwordChangedAt;
 
   public User(String email, String username, String password, String bio, String image) {
     this.id = UUID.randomUUID().toString();
@@ -37,6 +38,7 @@ public class User {
 
     if (!Util.isEmpty(password)) {
       this.password = password;
+      this.passwordChangedAt = System.currentTimeMillis();
     }
 
     if (!Util.isEmpty(bio)) {
