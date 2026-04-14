@@ -15,12 +15,15 @@ import io.spring.core.user.UserRepository;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import javax.validation.Valid;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +33,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @AllArgsConstructor
 public class UsersApi {
+  private static final Logger log = LoggerFactory.getLogger(UsersApi.class);
+
   private UserRepository userRepository;
   private UserQueryService userQueryService;
   private PasswordEncoder passwordEncoder;
@@ -45,7 +50,8 @@ public class UsersApi {
   }
 
   @RequestMapping(path = "/users/login", method = POST)
-  public ResponseEntity userLogin(@Valid @RequestBody LoginParam loginParam) {
+  public ResponseEntity userLogin(
+      @Valid @RequestBody LoginParam loginParam, HttpServletRequest request) {
     Optional<User> optional = userRepository.findByEmail(loginParam.getEmail());
     if (optional.isPresent()
         && passwordEncoder.matches(loginParam.getPassword(), optional.get().getPassword())) {
@@ -53,6 +59,10 @@ public class UsersApi {
       return ResponseEntity.ok(
           userResponse(new UserWithToken(userData, jwtService.toToken(optional.get()))));
     } else {
+      log.warn(
+          "Failed login attempt for email={} from IP={}",
+          loginParam.getEmail(),
+          request.getRemoteAddr());
       throw new InvalidAuthenticationException();
     }
   }

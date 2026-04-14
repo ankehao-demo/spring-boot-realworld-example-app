@@ -9,4 +9,6 @@ public interface JwtService {
   String toToken(User user);
 
   Optional<String> getSubFromToken(String token);
+
+  Optional<Long> getIssuedAtFromToken(String token);
 }

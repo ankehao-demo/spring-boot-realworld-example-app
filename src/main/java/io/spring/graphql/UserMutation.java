@@ -18,8 +18,10 @@ import io.spring.graphql.types.UpdateUserInput;
 import io.spring.graphql.types.UserPayload;
 import io.spring.graphql.types.UserResult;
 import java.util.Optional;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolationException;
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -28,6 +30,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @DgsComponent
 @AllArgsConstructor
 public class UserMutation {
+  private static final Logger log = LoggerFactory.getLogger(UserMutation.class);
 
   private UserRepository userRepository;
   private PasswordEncoder encryptService;
@@ -62,6 +65,7 @@ public class UserMutation {
           .localContext(optional.get())
           .build();
     } else {
+      log.warn("Failed GraphQL login attempt for email={}", email);
       throw new InvalidAuthenticationException();
     }
   }
@@ -72,7 +76,7 @@ public class UserMutation {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     if (authentication instanceof AnonymousAuthenticationToken
         || authentication.getPrincipal() == null) {
-      return null;
+      throw new InvalidAuthenticationException();
     }
     io.spring.core.user.User currentUser = (io.spring.core.user.User) authentication.getPrincipal();
     UpdateUserParam param =
