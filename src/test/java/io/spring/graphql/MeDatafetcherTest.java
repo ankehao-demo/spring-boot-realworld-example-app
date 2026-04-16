@@ -56,14 +56,12 @@ public class MeDatafetcherTest {
     UserData userData =
         new UserData(user.getId(), "test@test.com", "testuser", "bio", "image");
     when(userQueryService.findById(eq(user.getId()))).thenReturn(Optional.of(userData));
+    when(jwtService.toToken(any(User.class))).thenReturn("test-token");
 
     String query = "{ me { email username } }";
 
-    HttpHeaders headers = new HttpHeaders();
-    headers.add("Authorization", "Token test-token");
-
     String email =
-        dgsQueryExecutor.executeAndExtractJsonPath(query, "data.me.email", headers);
+        dgsQueryExecutor.executeAndExtractJsonPath(query, "data.me.email");
     org.assertj.core.api.Assertions.assertThat(email).isEqualTo("test@test.com");
   }
 }
