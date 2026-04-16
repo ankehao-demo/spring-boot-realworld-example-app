@@ -25,13 +25,18 @@ public class WebSecurityConfigTest {
 
   @Test
   void testPostUsersIsPublic() throws Exception {
-    mockMvc
-        .perform(
-            post("/users")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                    "{\"user\":{\"email\":\"test@test.com\",\"username\":\"test\",\"password\":\"password\"}}"))
-        .andExpect(status().is4xxClientError());
+    // This endpoint must not return 401/403 — any other status proves it's publicly accessible
+    int status =
+        mockMvc
+            .perform(
+                post("/users")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        "{\"user\":{\"email\":\"sectest@test.com\",\"username\":\"sectest\",\"password\":\"password\"}}"))
+            .andReturn()
+            .getResponse()
+            .getStatus();
+    assert status != 401 && status != 403 : "Expected public endpoint, got " + status;
   }
 
   @Test
