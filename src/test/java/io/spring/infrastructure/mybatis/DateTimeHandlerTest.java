@@ -4,8 +4,7 @@ import java.sql.CallableStatement;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import java.time.Instant;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -27,7 +26,7 @@ public class DateTimeHandlerTest {
 
   @Test
   void testSetParameter() throws Exception {
-    DateTime now = new DateTime().withZone(DateTimeZone.UTC);
+    Instant now = Instant.now();
 
     handler.setParameter(ps, 1, now, null);
 
@@ -39,10 +38,10 @@ public class DateTimeHandlerTest {
     Timestamp timestamp = new Timestamp(1700000000000L);
     when(rs.getTimestamp(eq("created_at"), any(java.util.Calendar.class))).thenReturn(timestamp);
 
-    DateTime result = handler.getResult(rs, "created_at");
+    Instant result = handler.getResult(rs, "created_at");
 
     org.assertj.core.api.Assertions.assertThat(result).isNotNull();
-    org.assertj.core.api.Assertions.assertThat(result.getMillis()).isEqualTo(1700000000000L);
+    org.assertj.core.api.Assertions.assertThat(result.toEpochMilli()).isEqualTo(1700000000000L);
   }
 
   @Test
@@ -50,10 +49,10 @@ public class DateTimeHandlerTest {
     Timestamp timestamp = new Timestamp(1700000000000L);
     when(rs.getTimestamp(eq(1), any(java.util.Calendar.class))).thenReturn(timestamp);
 
-    DateTime result = handler.getResult(rs, 1);
+    Instant result = handler.getResult(rs, 1);
 
     org.assertj.core.api.Assertions.assertThat(result).isNotNull();
-    org.assertj.core.api.Assertions.assertThat(result.getMillis()).isEqualTo(1700000000000L);
+    org.assertj.core.api.Assertions.assertThat(result.toEpochMilli()).isEqualTo(1700000000000L);
   }
 
   @Test
@@ -61,14 +60,14 @@ public class DateTimeHandlerTest {
     Timestamp timestamp = new Timestamp(1700000000000L);
     when(cs.getTimestamp(eq(1), any(java.util.Calendar.class))).thenReturn(timestamp);
 
-    DateTime result = handler.getResult(cs, 1);
+    Instant result = handler.getResult(cs, 1);
 
     org.assertj.core.api.Assertions.assertThat(result).isNotNull();
   }
 
   @Test
   void testRoundTrip() throws Exception {
-    DateTime original = new DateTime(1700000000000L).withZone(DateTimeZone.UTC);
+    Instant original = Instant.ofEpochMilli(1700000000000L);
 
     handler.setParameter(ps, 1, original, null);
     verify(ps).setTimestamp(eq(1), any(Timestamp.class), any(java.util.Calendar.class));

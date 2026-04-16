@@ -16,7 +16,7 @@ import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
 import java.util.Arrays;
 import java.util.Optional;
-import org.joda.time.DateTime;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +65,7 @@ public class CommentMutationTest {
   @Test
   void testAddComment() {
     when(articleRepository.findBySlug(eq("test-title"))).thenReturn(Optional.of(article));
-    DateTime now = new DateTime();
+    Instant now = Instant.now();
     CommentData commentData =
         new CommentData(
             "comment-id",

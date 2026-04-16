@@ -19,7 +19,7 @@ import io.spring.core.user.UserRepository;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
-import org.joda.time.DateTime;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,7 +56,7 @@ public class CommentDatafetcherTest {
   void setUp() {
     user = new User("test@test.com", "testuser", "password", "bio", "image");
     articleData = TestHelper.articleDataFixture("1", user);
-    DateTime now = new DateTime();
+    Instant now = Instant.now();
     commentData =
         new CommentData(
             "comment1",
