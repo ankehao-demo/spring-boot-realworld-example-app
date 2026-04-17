@@ -3,10 +3,12 @@ package io.spring.api;
 import io.spring.application.ArticleQueryService;
 import io.spring.application.Page;
 import io.spring.application.article.ArticleCommandService;
+import io.spring.application.article.NewArticleListParam;
 import io.spring.application.article.NewArticleParam;
 import io.spring.core.article.Article;
 import io.spring.core.user.User;
 import java.util.HashMap;
+import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +37,16 @@ public class ArticlesApi {
             put("article", articleQueryService.findById(article.getId(), user).get());
           }
         });
+  }
+
+  @PostMapping(path = "bulk")
+  public ResponseEntity createArticles(
+      @Valid @RequestBody NewArticleListParam newArticleListParam,
+      @AuthenticationPrincipal User user) {
+    List<Article> articles = articleCommandService.createArticles(newArticleListParam, user);
+    HashMap<String, Object> response = new HashMap<>();
+    response.put("articlesCount", articles.size());
+    return ResponseEntity.status(201).body(response);
   }
 
   @GetMapping(path = "feed")
