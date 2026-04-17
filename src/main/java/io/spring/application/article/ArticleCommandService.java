@@ -8,6 +8,7 @@ import java.util.List;
 import javax.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 
 @Service
@@ -29,6 +30,7 @@ public class ArticleCommandService {
     return article;
   }
 
+  @Transactional
   public List<Article> createArticles(@Valid NewArticleListParam newArticleListParam, User creator) {
     List<Article> created = new ArrayList<>();
     for (NewArticleParam param : newArticleListParam.getArticles()) {
