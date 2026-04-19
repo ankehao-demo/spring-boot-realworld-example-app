@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.toList;
 import io.spring.application.data.ArticleData;
 import io.spring.application.data.ArticleDataList;
 import io.spring.application.data.ArticleFavoriteCount;
+import io.spring.application.data.ArticleStatisticsData;
 import io.spring.core.user.User;
 import io.spring.infrastructure.mybatis.readservice.ArticleFavoritesReadService;
 import io.spring.infrastructure.mybatis.readservice.ArticleReadService;
+import io.spring.infrastructure.mybatis.readservice.CommentReadService;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +28,7 @@ public class ArticleQueryService {
   private ArticleReadService articleReadService;
   private UserRelationshipQueryService userRelationshipQueryService;
   private ArticleFavoritesReadService articleFavoritesReadService;
+  private CommentReadService commentReadService;
 
   public Optional<ArticleData> findById(String id, User user) {
     ArticleData articleData = articleReadService.findById(id);
@@ -170,6 +173,17 @@ public class ArticleQueryService {
             articleData.setFavorited(true);
           }
         });
+  }
+
+  public Optional<ArticleStatisticsData> getArticleStatistics(String slug) {
+    ArticleData articleData = articleReadService.findBySlug(slug);
+    if (articleData == null) {
+      return Optional.empty();
+    }
+    int favoritesCount = articleFavoritesReadService.articleFavoriteCount(articleData.getId());
+    int commentCount = commentReadService.countByArticleId(articleData.getId());
+    return Optional.of(
+        new ArticleStatisticsData(articleData.getId(), favoritesCount, commentCount));
   }
 
   private void fillExtraInfo(String id, User user, ArticleData articleData) {

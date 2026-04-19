@@ -78,6 +78,14 @@ public class ArticleApi {
         .orElseThrow(ResourceNotFoundException::new);
   }
 
+  @GetMapping("/stats")
+  public ResponseEntity<?> getArticleStatistics(@PathVariable("slug") String slug) {
+    return articleQueryService
+        .getArticleStatistics(slug)
+        .map(stats -> ResponseEntity.ok(Map.of("statistics", stats)))
+        .orElseThrow(ResourceNotFoundException::new);
+  }
+
   private Map<String, Object> articleResponse(ArticleData articleData) {
     return new HashMap<String, Object>() {
       {
