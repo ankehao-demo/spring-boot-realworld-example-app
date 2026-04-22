@@ -1,14 +1,16 @@
 package io.spring.application.user;
 
-import com.fasterxml.jackson.annotation.JsonRootName;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
+import com.fasterxml.jackson.annotation.JsonTypeName;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@JsonRootName("user")
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include = JsonTypeInfo.As.WRAPPER_OBJECT)
+@JsonTypeName("user")
 @AllArgsConstructor
 @NoArgsConstructor
 public class RegisterParam {
