@@ -1,5 +1,6 @@
 package io.spring.api;
 
+import io.spring.api.exception.ResourceNotFoundException;
 import io.spring.application.ArticleQueryService;
 import io.spring.application.Page;
 import io.spring.application.article.ArticleCommandService;
@@ -7,7 +8,7 @@ import io.spring.application.article.NewArticleParam;
 import io.spring.core.article.Article;
 import io.spring.core.user.User;
 import java.util.HashMap;
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +33,7 @@ public class ArticlesApi {
     return ResponseEntity.ok(
         new HashMap<String, Object>() {
           {
-            put("article", articleQueryService.findById(article.getId(), user).get());
+            put("article", articleQueryService.findById(article.getId(), user).orElseThrow(ResourceNotFoundException::new));
           }
         });
   }

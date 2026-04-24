@@ -4,10 +4,10 @@ import io.spring.core.user.User;
 import io.spring.core.user.UserRepository;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import javax.validation.Constraint;
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
-import javax.validation.Valid;
+import jakarta.validation.Constraint;
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -46,10 +46,14 @@ public class UserService {
   public void updateUser(@Valid UpdateUserCommand command) {
     User user = command.getTargetUser();
     UpdateUserParam updateUserParam = command.getParam();
+    String password = updateUserParam.getPassword();
+    if (!io.spring.Util.isEmpty(password)) {
+      password = passwordEncoder.encode(password);
+    }
     user.update(
         updateUserParam.getEmail(),
         updateUserParam.getUsername(),
-        updateUserParam.getPassword(),
+        password,
         updateUserParam.getBio(),
         updateUserParam.getImage());
     userRepository.save(user);

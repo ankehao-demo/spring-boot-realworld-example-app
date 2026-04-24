@@ -7,10 +7,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -27,6 +28,16 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
   @ExceptionHandler({InvalidRequestException.class})
   public ResponseEntity<Object> handleInvalidRequest(RuntimeException e, WebRequest request) {
     InvalidRequestException ire = (InvalidRequestException) e;
+
+    if (ire.getErrors() == null) {
+      return ResponseEntity.status(UNPROCESSABLE_ENTITY)
+          .body(
+              new HashMap<String, Object>() {
+                {
+                  put("message", ire.getMessage());
+                }
+              });
+    }
 
     List<FieldErrorResource> errorResources =
         ire.getErrors().getFieldErrors().stream()
@@ -63,7 +74,7 @@ public class CustomizeExceptionHandler extends ResponseEntityExceptionHandler {
   protected ResponseEntity<Object> handleMethodArgumentNotValid(
       MethodArgumentNotValidException e,
       HttpHeaders headers,
-      HttpStatus status,
+      HttpStatusCode status,
       WebRequest request) {
     List<FieldErrorResource> errorResources =
         e.getBindingResult().getFieldErrors().stream()
