@@ -3,13 +3,14 @@ package io.spring.core.article;
 import static java.util.stream.Collectors.toList;
 
 import io.spring.Util;
+import java.time.Instant;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.joda.time.DateTime;
 
 @Getter
 @NoArgsConstructor
@@ -22,12 +23,12 @@ public class Article {
   private String description;
   private String body;
   private List<Tag> tags;
-  private DateTime createdAt;
-  private DateTime updatedAt;
+  private Instant createdAt;
+  private Instant updatedAt;
 
   public Article(
       String title, String description, String body, List<String> tagList, String userId) {
-    this(title, description, body, tagList, userId, new DateTime());
+    this(title, description, body, tagList, userId, Instant.now());
   }
 
   public Article(
@@ -36,13 +37,16 @@ public class Article {
       String body,
       List<String> tagList,
       String userId,
-      DateTime createdAt) {
+      Instant createdAt) {
     this.id = UUID.randomUUID().toString();
-    this.slug = toSlug(title);
+    this.slug = toSlug(title) + "-" + UUID.randomUUID().toString().substring(0, 8);
     this.title = title;
     this.description = description;
     this.body = body;
-    this.tags = new HashSet<>(tagList).stream().map(Tag::new).collect(toList());
+    this.tags =
+        tagList == null
+            ? new ArrayList<>()
+            : new HashSet<>(tagList).stream().map(Tag::new).collect(toList());
     this.userId = userId;
     this.createdAt = createdAt;
     this.updatedAt = createdAt;
@@ -51,20 +55,21 @@ public class Article {
   public void update(String title, String description, String body) {
     if (!Util.isEmpty(title)) {
       this.title = title;
-      this.slug = toSlug(title);
-      this.updatedAt = new DateTime();
+      this.slug = toSlug(title) + "-" + UUID.randomUUID().toString().substring(0, 8);
+      this.updatedAt = Instant.now();
     }
     if (!Util.isEmpty(description)) {
       this.description = description;
-      this.updatedAt = new DateTime();
+      this.updatedAt = Instant.now();
     }
     if (!Util.isEmpty(body)) {
       this.body = body;
-      this.updatedAt = new DateTime();
+      this.updatedAt = Instant.now();
     }
   }
 
   public static String toSlug(String title) {
-    return title.toLowerCase().replaceAll("[\\&|[\\uFE30-\\uFFA0]|\\’|\\”|\\s\\?\\,\\.]+", "-");
+    if (title == null) return "";
+    return title.toLowerCase().replaceAll("[&|\\uFE30-\\uFFA0'\"\\s?,\\.]+", "-");
   }
 }

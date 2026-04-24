@@ -1,5 +1,6 @@
 package io.spring.api;
 
+import io.spring.api.exception.InvalidRequestException;
 import io.spring.api.exception.ResourceNotFoundException;
 import io.spring.application.ProfileQueryService;
 import io.spring.application.data.ProfileData;
@@ -41,9 +42,19 @@ public class ProfileApi {
         .findByUsername(username)
         .map(
             target -> {
-              FollowRelation followRelation = new FollowRelation(user.getId(), target.getId());
-              userRepository.saveRelation(followRelation);
-              return profileResponse(profileQueryService.findByUsername(username, user).get());
+              if (user.getId().equals(target.getId())) {
+                throw new InvalidRequestException("Cannot follow yourself");
+              }
+              userRepository.findRelation(user.getId(), target.getId())
+                  .orElseGet(() -> {
+                    FollowRelation followRelation = new FollowRelation(user.getId(), target.getId());
+                    userRepository.saveRelation(followRelation);
+                    return followRelation;
+                  });
+              return profileResponse(
+                  profileQueryService
+                      .findByUsername(username, user)
+                      .orElseThrow(ResourceNotFoundException::new));
             })
         .orElseThrow(ResourceNotFoundException::new);
   }
@@ -54,14 +65,13 @@ public class ProfileApi {
     Optional<User> userOptional = userRepository.findByUsername(username);
     if (userOptional.isPresent()) {
       User target = userOptional.get();
-      return userRepository
+      userRepository
           .findRelation(user.getId(), target.getId())
-          .map(
-              relation -> {
-                userRepository.removeRelation(relation);
-                return profileResponse(profileQueryService.findByUsername(username, user).get());
-              })
-          .orElseThrow(ResourceNotFoundException::new);
+          .ifPresent(userRepository::removeRelation);
+      return profileResponse(
+          profileQueryService
+              .findByUsername(username, user)
+              .orElseThrow(ResourceNotFoundException::new));
     } else {
       throw new ResourceNotFoundException();
     }

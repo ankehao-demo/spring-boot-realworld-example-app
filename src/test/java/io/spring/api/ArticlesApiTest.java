@@ -4,6 +4,7 @@ import static io.restassured.module.mockmvc.RestAssuredMockMvc.given;
 import static java.util.Arrays.asList;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -20,7 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import org.joda.time.DateTime;
+import java.time.Instant;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,15 +64,15 @@ public class ArticlesApiTest extends TestWithCurrentUser {
             body,
             false,
             0,
-            new DateTime(),
-            new DateTime(),
+            Instant.now(),
+            Instant.now(),
             tagList,
             new ProfileData("userid", user.getUsername(), user.getBio(), user.getImage(), false));
 
     when(articleCommandService.createArticle(any(), any()))
         .thenReturn(new Article(title, description, body, tagList, user.getId()));
 
-    when(articleQueryService.findBySlug(eq(Article.toSlug(title)), any()))
+    when(articleQueryService.findBySlug(anyString(), any()))
         .thenReturn(Optional.empty());
 
     when(articleQueryService.findById(any(), any())).thenReturn(Optional.of(articleData));
@@ -132,12 +133,12 @@ public class ArticlesApiTest extends TestWithCurrentUser {
             body,
             false,
             0,
-            new DateTime(),
-            new DateTime(),
+            Instant.now(),
+            Instant.now(),
             asList(tagList),
             new ProfileData("userid", user.getUsername(), user.getBio(), user.getImage(), false));
 
-    when(articleQueryService.findBySlug(eq(Article.toSlug(title)), any()))
+    when(articleQueryService.findBySlug(anyString(), any()))
         .thenReturn(Optional.of(articleData));
 
     when(articleQueryService.findById(any(), any())).thenReturn(Optional.of(articleData));
