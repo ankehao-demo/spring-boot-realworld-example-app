@@ -54,14 +54,14 @@ export const Statistics = () => {
   const totalComments = statistics.reduce((sum, s) => sum + s.commentsCount, 0);
 
   const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
-    if (sortKey !== columnKey) return <span className="text-gray-300 ml-1">{"\u2195"}</span>;
-    return <span className="ml-1">{sortDirection === 'asc' ? '\u25B2' : '\u25BC'}</span>;
+    if (sortKey !== columnKey) return <span className="text-blue-200 ml-1">{"\u2195"}</span>;
+    return <span className="text-blue-200 ml-1">{sortDirection === 'asc' ? '\u25B2' : '\u25BC'}</span>;
   };
 
   if (loading) {
     return (
       <div className="text-center py-8">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500 mx-auto"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto"></div>
       </div>
     );
   }
@@ -76,76 +76,77 @@ export const Statistics = () => {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Article Statistics</h1>
+      <h1 className="text-3xl font-bold text-blue-900 mb-2">Article Statistics</h1>
+      <p className="text-blue-600 mb-6">Overview of article performance metrics</p>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-          <p className="text-sm text-gray-500 uppercase tracking-wide">Total Articles</p>
-          <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.length}</p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-blue-700 uppercase tracking-wide">Total Articles</p>
+          <p className="text-3xl font-bold text-blue-700 mt-1">{statistics.length}</p>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-          <p className="text-sm text-gray-500 uppercase tracking-wide">Total Views</p>
-          <p className="text-3xl font-bold text-green-600 mt-1">{totalViews}</p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-blue-700 uppercase tracking-wide">Total Views</p>
+          <p className="text-3xl font-bold text-blue-700 mt-1">{totalViews}</p>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-          <p className="text-sm text-gray-500 uppercase tracking-wide">Total Favorites</p>
-          <p className="text-3xl font-bold text-green-600 mt-1">{totalFavorites}</p>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-red-700 uppercase tracking-wide">Total Favorites</p>
+          <p className="text-3xl font-bold text-red-700 mt-1">{totalFavorites}</p>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
-          <p className="text-sm text-gray-500 uppercase tracking-wide">Total Comments</p>
-          <p className="text-3xl font-bold text-green-600 mt-1">{totalComments}</p>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-red-700 uppercase tracking-wide">Total Comments</p>
+          <p className="text-3xl font-bold text-red-700 mt-1">{totalComments}</p>
         </div>
       </div>
 
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
+      <div className="bg-white border border-blue-200 rounded-lg shadow-sm overflow-hidden">
+        <table className="min-w-full divide-y divide-blue-200">
+          <thead className="bg-blue-600">
             <tr>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('title')}
               >
                 Title <SortIcon columnKey="title" />
               </th>
               <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('authorUsername')}
               >
                 Author <SortIcon columnKey="authorUsername" />
               </th>
               <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('viewCount')}
               >
                 Views <SortIcon columnKey="viewCount" />
               </th>
               <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('favoritesCount')}
               >
                 Favorites <SortIcon columnKey="favoritesCount" />
               </th>
               <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('commentsCount')}
               >
                 Comments <SortIcon columnKey="commentsCount" />
               </th>
               <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                className="px-6 py-3 text-right text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-blue-700"
                 onClick={() => handleSort('createdAt')}
               >
                 Created <SortIcon columnKey="createdAt" />
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {sortedStatistics.map((stat) => (
-              <tr key={stat.articleId} className="hover:bg-gray-50">
+          <tbody className="bg-white divide-y divide-blue-100">
+            {sortedStatistics.map((stat, index) => (
+              <tr key={stat.articleId} className={index % 2 === 0 ? 'bg-blue-50 hover:bg-blue-100' : 'bg-red-50 hover:bg-red-100'}>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <Link
                     to={`/article/${stat.slug}`}
-                    className="text-green-600 hover:text-green-800 font-medium"
+                    className="text-blue-600 hover:text-blue-800 font-medium"
                   >
                     {stat.title}
                   </Link>
