@@ -3,6 +3,7 @@ package io.spring.api;
 import io.spring.api.exception.NoAuthorizationException;
 import io.spring.api.exception.ResourceNotFoundException;
 import io.spring.application.ArticleQueryService;
+import io.spring.application.StatisticsQueryService;
 import io.spring.application.article.ArticleCommandService;
 import io.spring.application.article.UpdateArticleParam;
 import io.spring.application.data.ArticleData;
@@ -31,13 +32,18 @@ public class ArticleApi {
   private ArticleQueryService articleQueryService;
   private ArticleRepository articleRepository;
   private ArticleCommandService articleCommandService;
+  private StatisticsQueryService statisticsQueryService;
 
   @GetMapping
   public ResponseEntity<?> article(
       @PathVariable("slug") String slug, @AuthenticationPrincipal User user) {
     return articleQueryService
         .findBySlug(slug, user)
-        .map(articleData -> ResponseEntity.ok(articleResponse(articleData)))
+        .map(
+            articleData -> {
+              statisticsQueryService.recordView(articleData.getId(), user);
+              return ResponseEntity.ok(articleResponse(articleData));
+            })
         .orElseThrow(ResourceNotFoundException::new);
   }
 
