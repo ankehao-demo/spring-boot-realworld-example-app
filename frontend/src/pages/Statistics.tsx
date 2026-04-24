@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { statisticsApi } from '../services/api';
 import type { ArticleStatistics } from '../types';
 
-type SortKey = 'title' | 'authorUsername' | 'viewCount' | 'favoritesCount' | 'commentsCount' | 'createdAt';
+type SortKey = 'title' | 'authorUsername' | 'viewCount' | 'favoritesCount' | 'commentsCount' | 'createdAt' | 'readTimeMinutes' | 'engagementRate' | 'trendingScore';
 type SortDirection = 'asc' | 'desc';
 
 export const Statistics = () => {
@@ -52,6 +52,12 @@ export const Statistics = () => {
   const totalViews = statistics.reduce((sum, s) => sum + s.viewCount, 0);
   const totalFavorites = statistics.reduce((sum, s) => sum + s.favoritesCount, 0);
   const totalComments = statistics.reduce((sum, s) => sum + s.commentsCount, 0);
+  const avgReadTime = statistics.length > 0
+    ? Math.round(statistics.reduce((sum, s) => sum + s.readTimeMinutes, 0) / statistics.length)
+    : 0;
+  const avgEngagementRate = statistics.length > 0
+    ? Math.round(statistics.reduce((sum, s) => sum + s.engagementRate, 0) / statistics.length * 100) / 100
+    : 0;
 
   const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
     if (sortKey !== columnKey) return <span className="text-gray-300 ml-1">{"\u2195"}</span>;
@@ -78,7 +84,7 @@ export const Statistics = () => {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Article Statistics</h1>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
         <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
           <p className="text-sm text-gray-500 uppercase tracking-wide">Total Articles</p>
           <p className="text-3xl font-bold text-gray-900 mt-1">{statistics.length}</p>
@@ -95,87 +101,124 @@ export const Statistics = () => {
           <p className="text-sm text-gray-500 uppercase tracking-wide">Total Comments</p>
           <p className="text-3xl font-bold text-green-600 mt-1">{totalComments}</p>
         </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-gray-500 uppercase tracking-wide">Avg Read Time</p>
+          <p className="text-3xl font-bold text-blue-600 mt-1">{avgReadTime} min</p>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6 text-center shadow-sm">
+          <p className="text-sm text-gray-500 uppercase tracking-wide">Avg Engagement</p>
+          <p className="text-3xl font-bold text-purple-600 mt-1">{avgEngagementRate}%</p>
+        </div>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('title')}
-              >
-                Title <SortIcon columnKey="title" />
-              </th>
-              <th
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('authorUsername')}
-              >
-                Author <SortIcon columnKey="authorUsername" />
-              </th>
-              <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('viewCount')}
-              >
-                Views <SortIcon columnKey="viewCount" />
-              </th>
-              <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('favoritesCount')}
-              >
-                Favorites <SortIcon columnKey="favoritesCount" />
-              </th>
-              <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('commentsCount')}
-              >
-                Comments <SortIcon columnKey="commentsCount" />
-              </th>
-              <th
-                className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                onClick={() => handleSort('createdAt')}
-              >
-                Created <SortIcon columnKey="createdAt" />
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {sortedStatistics.map((stat) => (
-              <tr key={stat.articleId} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Link
-                    to={`/article/${stat.slug}`}
-                    className="text-green-600 hover:text-green-800 font-medium"
-                  >
-                    {stat.title}
-                  </Link>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {stat.authorUsername}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {stat.viewCount}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {stat.favoritesCount}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
-                  {stat.commentsCount}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
-                  {new Date(stat.createdAt).toLocaleDateString()}
-                </td>
-              </tr>
-            ))}
-            {sortedStatistics.length === 0 && (
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                  No articles found.
-                </td>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('title')}
+                >
+                  Title <SortIcon columnKey="title" />
+                </th>
+                <th
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('authorUsername')}
+                >
+                  Author <SortIcon columnKey="authorUsername" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('viewCount')}
+                >
+                  Views <SortIcon columnKey="viewCount" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('favoritesCount')}
+                >
+                  Favorites <SortIcon columnKey="favoritesCount" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('commentsCount')}
+                >
+                  Comments <SortIcon columnKey="commentsCount" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('readTimeMinutes')}
+                >
+                  Read Time <SortIcon columnKey="readTimeMinutes" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('engagementRate')}
+                >
+                  Engagement <SortIcon columnKey="engagementRate" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('trendingScore')}
+                >
+                  Trending <SortIcon columnKey="trendingScore" />
+                </th>
+                <th
+                  className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+                  onClick={() => handleSort('createdAt')}
+                >
+                  Created <SortIcon columnKey="createdAt" />
+                </th>
               </tr>
-            )}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {sortedStatistics.map((stat) => (
+                <tr key={stat.articleId} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <Link
+                      to={`/article/${stat.slug}`}
+                      className="text-green-600 hover:text-green-800 font-medium"
+                    >
+                      {stat.title}
+                    </Link>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {stat.authorUsername}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.viewCount}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.favoritesCount}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.commentsCount}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.readTimeMinutes} min
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.engagementRate}%
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-right">
+                    {stat.trendingScore}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-right">
+                    {new Date(stat.createdAt).toLocaleDateString()}
+                  </td>
+                </tr>
+              ))}
+              {sortedStatistics.length === 0 && (
+                <tr>
+                  <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
+                    No articles found.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

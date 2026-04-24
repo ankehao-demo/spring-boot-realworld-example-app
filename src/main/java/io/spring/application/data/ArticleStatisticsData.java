@@ -17,4 +17,8 @@ public class ArticleStatisticsData {
   private int favoritesCount;
   private int commentsCount;
   private DateTime createdAt;
+  private int wordCount;
+  private double readTimeMinutes;
+  private double engagementRate;
+  private double trendingScore;
 }

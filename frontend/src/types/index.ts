@@ -86,4 +86,8 @@ export interface ArticleStatistics {
   favoritesCount: number;
   commentsCount: number;
   createdAt: string;
+  wordCount: number;
+  readTimeMinutes: number;
+  engagementRate: number;
+  trendingScore: number;
 }

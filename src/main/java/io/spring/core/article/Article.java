@@ -22,6 +22,7 @@ public class Article {
   private String description;
   private String body;
   private List<Tag> tags;
+  private int wordCount;
   private DateTime createdAt;
   private DateTime updatedAt;
 
@@ -42,6 +43,7 @@ public class Article {
     this.title = title;
     this.description = description;
     this.body = body;
+    this.wordCount = countWords(body);
     this.tags = new HashSet<>(tagList).stream().map(Tag::new).collect(toList());
     this.userId = userId;
     this.createdAt = createdAt;
@@ -60,11 +62,19 @@ public class Article {
     }
     if (!Util.isEmpty(body)) {
       this.body = body;
+      this.wordCount = countWords(body);
       this.updatedAt = new DateTime();
     }
   }
 
   public static String toSlug(String title) {
     return title.toLowerCase().replaceAll("[\\&|[\\uFE30-\\uFFA0]|\\’|\\”|\\s\\?\\,\\.]+", "-");
+  }
+
+  private static int countWords(String text) {
+    if (text == null || text.isBlank()) {
+      return 0;
+    }
+    return text.trim().split("\\s+").length;
   }
 }

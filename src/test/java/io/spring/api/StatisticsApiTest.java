@@ -40,7 +40,18 @@ public class StatisticsApiTest extends TestWithCurrentUser {
     DateTime now = new DateTime();
     ArticleStatisticsData stat =
         new ArticleStatisticsData(
-            "article-id-1", "test-article", "Test Article", "johnjacob", 10, 5, 3, now);
+            "article-id-1",
+            "test-article",
+            "Test Article",
+            "johnjacob",
+            10,
+            5,
+            3,
+            now,
+            500,
+            3.0,
+            80.0,
+            25.0);
 
     when(statisticsQueryService.getArticleStatistics()).thenReturn(Arrays.asList(stat));
 
@@ -56,7 +67,11 @@ public class StatisticsApiTest extends TestWithCurrentUser {
         .body("statistics[0].authorUsername", equalTo("johnjacob"))
         .body("statistics[0].viewCount", equalTo(10))
         .body("statistics[0].favoritesCount", equalTo(5))
-        .body("statistics[0].commentsCount", equalTo(3));
+        .body("statistics[0].commentsCount", equalTo(3))
+        .body("statistics[0].wordCount", equalTo(500))
+        .body("statistics[0].readTimeMinutes", equalTo(3.0f))
+        .body("statistics[0].engagementRate", equalTo(80.0f))
+        .body("statistics[0].trendingScore", equalTo(25.0f));
   }
 
   @Test
