@@ -2,7 +2,6 @@ package io.spring.api;
 
 import io.spring.application.StatisticsQueryService;
 import io.spring.application.data.ArticleStatisticsData;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import lombok.AllArgsConstructor;
@@ -24,10 +23,6 @@ public class StatisticsApi {
   }
 
   private Map<String, Object> statisticsResponse(List<ArticleStatisticsData> statistics) {
-    return new HashMap<String, Object>() {
-      {
-        put("statistics", statistics);
-      }
-    };
+    return Map.of("statistics", statistics);
   }
 }
