@@ -41,7 +41,10 @@ public class ArticleApi {
         .findBySlug(slug, user)
         .map(
             articleData -> {
-              statisticsQueryService.recordView(articleData.getId(), user);
+              try {
+                statisticsQueryService.recordView(articleData.getId(), user);
+              } catch (Exception ignored) {
+              }
               return ResponseEntity.ok(articleResponse(articleData));
             })
         .orElseThrow(ResourceNotFoundException::new);

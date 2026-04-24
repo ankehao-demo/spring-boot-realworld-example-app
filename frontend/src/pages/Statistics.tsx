@@ -54,8 +54,8 @@ export const Statistics = () => {
   const totalComments = statistics.reduce((sum, s) => sum + s.commentsCount, 0);
 
   const SortIcon = ({ columnKey }: { columnKey: SortKey }) => {
-    if (sortKey !== columnKey) return <span className="text-gray-300 ml-1">&#8597;</span>;
-    return <span className="ml-1">{sortDirection === 'asc' ? '&#9650;' : '&#9660;'}</span>;
+    if (sortKey !== columnKey) return <span className="text-gray-300 ml-1">{"\u2195"}</span>;
+    return <span className="ml-1">{sortDirection === 'asc' ? '\u25B2' : '\u25BC'}</span>;
   };
 
   if (loading) {
