@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.readservice.ArticleViewsReadService">
+    <select id="articleViewCount" resultType="int">
+        SELECT COUNT(*) FROM article_views WHERE article_id = #{articleId}
+    </select>
+    <select id="articlesViewCount" resultType="io.spring.application.data.ArticleViewCount">
+        SELECT article_id id, COUNT(*) count FROM article_views
+        WHERE article_id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">#{id}</foreach>
+        GROUP BY article_id
+    </select>
+</mapper>

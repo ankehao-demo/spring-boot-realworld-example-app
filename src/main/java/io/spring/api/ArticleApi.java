@@ -8,6 +8,8 @@ import io.spring.application.article.UpdateArticleParam;
 import io.spring.application.data.ArticleData;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
+import io.spring.core.article.ArticleView;
+import io.spring.core.article.ArticleViewRepository;
 import io.spring.core.service.AuthorizationService;
 import io.spring.core.user.User;
 import java.util.HashMap;
@@ -31,13 +33,21 @@ public class ArticleApi {
   private ArticleQueryService articleQueryService;
   private ArticleRepository articleRepository;
   private ArticleCommandService articleCommandService;
+  private ArticleViewRepository articleViewRepository;
 
   @GetMapping
   public ResponseEntity<?> article(
       @PathVariable("slug") String slug, @AuthenticationPrincipal User user) {
     return articleQueryService
         .findBySlug(slug, user)
-        .map(articleData -> ResponseEntity.ok(articleResponse(articleData)))
+        .map(
+            articleData -> {
+              ArticleView view =
+                  new ArticleView(articleData.getId(), user != null ? user.getId() : null);
+              articleViewRepository.save(view);
+              articleData.setViewCount(articleData.getViewCount() + 1);
+              return ResponseEntity.ok(articleResponse(articleData));
+            })
         .orElseThrow(ResourceNotFoundException::new);
   }
 

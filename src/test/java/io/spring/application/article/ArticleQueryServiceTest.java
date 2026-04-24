@@ -10,6 +10,8 @@ import io.spring.application.data.ArticleData;
 import io.spring.application.data.ArticleDataList;
 import io.spring.core.article.Article;
 import io.spring.core.article.ArticleRepository;
+import io.spring.core.article.ArticleView;
+import io.spring.core.article.ArticleViewRepository;
 import io.spring.core.favorite.ArticleFavorite;
 import io.spring.core.favorite.ArticleFavoriteRepository;
 import io.spring.core.user.FollowRelation;
@@ -18,6 +20,7 @@ import io.spring.core.user.UserRepository;
 import io.spring.infrastructure.DbTestBase;
 import io.spring.infrastructure.repository.MyBatisArticleFavoriteRepository;
 import io.spring.infrastructure.repository.MyBatisArticleRepository;
+import io.spring.infrastructure.repository.MyBatisArticleViewRepository;
 import io.spring.infrastructure.repository.MyBatisUserRepository;
 import java.util.Arrays;
 import java.util.Optional;
@@ -32,7 +35,8 @@ import org.springframework.context.annotation.Import;
   ArticleQueryService.class,
   MyBatisUserRepository.class,
   MyBatisArticleRepository.class,
-  MyBatisArticleFavoriteRepository.class
+  MyBatisArticleFavoriteRepository.class,
+  MyBatisArticleViewRepository.class
 })
 public class ArticleQueryServiceTest extends DbTestBase {
   @Autowired private ArticleQueryService queryService;
@@ -42,6 +46,8 @@ public class ArticleQueryServiceTest extends DbTestBase {
   @Autowired private UserRepository userRepository;
 
   @Autowired private ArticleFavoriteRepository articleFavoriteRepository;
+
+  @Autowired private ArticleViewRepository articleViewRepository;
 
   private User user;
   private Article article;
@@ -226,5 +232,19 @@ public class ArticleQueryServiceTest extends DbTestBase {
     Assertions.assertEquals(anotherUserFeed.getCount(), 1);
     ArticleData articleData = anotherUserFeed.getArticleDatas().get(0);
     Assertions.assertTrue(articleData.getProfileData().isFollowing());
+  }
+
+  @Test
+  public void should_get_article_with_correct_view_count() {
+    Optional<ArticleData> optional = queryService.findById(article.getId(), user);
+    Assertions.assertTrue(optional.isPresent());
+    Assertions.assertEquals(0, optional.get().getViewCount());
+
+    articleViewRepository.save(new ArticleView(article.getId(), user.getId()));
+    articleViewRepository.save(new ArticleView(article.getId(), null));
+
+    optional = queryService.findById(article.getId(), user);
+    Assertions.assertTrue(optional.isPresent());
+    Assertions.assertEquals(2, optional.get().getViewCount());
   }
 }

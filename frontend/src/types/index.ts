@@ -29,6 +29,7 @@ export interface Article {
   body: string;
   favorited: boolean;
   favoritesCount: number;
+  viewCount: number;
   createdAt: string;
   updatedAt: string;
   tagList: string[];
