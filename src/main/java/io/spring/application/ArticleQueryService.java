@@ -5,9 +5,11 @@ import static java.util.stream.Collectors.toList;
 import io.spring.application.data.ArticleData;
 import io.spring.application.data.ArticleDataList;
 import io.spring.application.data.ArticleFavoriteCount;
+import io.spring.application.data.ArticleViewCount;
 import io.spring.core.user.User;
 import io.spring.infrastructure.mybatis.readservice.ArticleFavoritesReadService;
 import io.spring.infrastructure.mybatis.readservice.ArticleReadService;
+import io.spring.infrastructure.mybatis.readservice.ArticleViewsReadService;
 import io.spring.infrastructure.mybatis.readservice.UserRelationshipQueryService;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,12 +28,14 @@ public class ArticleQueryService {
   private ArticleReadService articleReadService;
   private UserRelationshipQueryService userRelationshipQueryService;
   private ArticleFavoritesReadService articleFavoritesReadService;
+  private ArticleViewsReadService articleViewsReadService;
 
   public Optional<ArticleData> findById(String id, User user) {
     ArticleData articleData = articleReadService.findById(id);
     if (articleData == null) {
       return Optional.empty();
     } else {
+      articleData.setViewCount(articleViewsReadService.articleViewCount(articleData.getId()));
       if (user != null) {
         fillExtraInfo(id, user, articleData);
       }
@@ -44,6 +48,7 @@ public class ArticleQueryService {
     if (articleData == null) {
       return Optional.empty();
     } else {
+      articleData.setViewCount(articleViewsReadService.articleViewCount(articleData.getId()));
       if (user != null) {
         fillExtraInfo(articleData.getId(), user, articleData);
       }
@@ -124,6 +129,7 @@ public class ArticleQueryService {
 
   private void fillExtraInfo(List<ArticleData> articles, User currentUser) {
     setFavoriteCount(articles);
+    setViewCount(articles);
     if (currentUser != null) {
       setIsFavorite(articles, currentUser);
       setIsFollowingAuthor(articles, currentUser);
@@ -143,6 +149,16 @@ public class ArticleQueryService {
             articleData.getProfileData().setFollowing(true);
           }
         });
+  }
+
+  private void setViewCount(List<ArticleData> articles) {
+    List<ArticleViewCount> viewCounts =
+        articleViewsReadService.articlesViewCount(
+            articles.stream().map(ArticleData::getId).collect(toList()));
+    Map<String, Integer> countMap = new HashMap<>();
+    viewCounts.forEach(item -> countMap.put(item.getId(), item.getCount()));
+    articles.forEach(
+        articleData -> articleData.setViewCount(countMap.getOrDefault(articleData.getId(), 0)));
   }
 
   private void setFavoriteCount(List<ArticleData> articles) {

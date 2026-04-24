@@ -59,6 +59,7 @@ public class ArticleFavoriteApiTest extends TestWithCurrentUser {
             article.getBody(),
             true,
             1,
+            0,
             article.getCreatedAt(),
             article.getUpdatedAt(),
             article.getTags().stream().map(Tag::getName).collect(Collectors.toList()),
