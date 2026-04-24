@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="io.spring.infrastructure.mybatis.readservice.StatisticsReadService">
+    <select id="getArticleStatistics" resultType="io.spring.application.data.ArticleStatisticsData">
+        SELECT
+          A.id as articleId,
+          A.slug as slug,
+          A.title as title,
+          U.username as authorUsername,
+          COUNT(DISTINCT AV.id) as viewCount,
+          COUNT(DISTINCT AF.article_id || '-' || AF.user_id) as favoritesCount,
+          COUNT(DISTINCT C.id) as commentsCount,
+          A.created_at as createdAt,
+          A.word_count as wordCount,
+          (SELECT COALESCE(SUM(
+            CASE
+              WHEN V.viewed_at >= datetime('now', '-1 day') THEN 3
+              WHEN V.viewed_at >= datetime('now', '-7 days') THEN 2
+              ELSE 1
+            END
+          ), 0) FROM article_views V WHERE V.article_id = A.id) as trendingScore
+        FROM articles A
+        LEFT JOIN article_views AV ON A.id = AV.article_id
+        LEFT JOIN article_favorites AF ON A.id = AF.article_id
+        LEFT JOIN comments C ON A.id = C.article_id
+        LEFT JOIN users U ON A.user_id = U.id
+        GROUP BY A.id, A.slug, A.title, U.username, A.created_at, A.word_count
+        ORDER BY viewCount DESC
+    </select>
+    <select id="getArticleViewCount" resultType="int">
+        SELECT COUNT(*) FROM article_views WHERE article_id = #{articleId}
+    </select>
+</mapper>

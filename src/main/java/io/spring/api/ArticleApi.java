@@ -2,7 +2,9 @@ package io.spring.api;
 
 import io.spring.api.exception.NoAuthorizationException;
 import io.spring.api.exception.ResourceNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import io.spring.application.ArticleQueryService;
+import io.spring.application.StatisticsQueryService;
 import io.spring.application.article.ArticleCommandService;
 import io.spring.application.article.UpdateArticleParam;
 import io.spring.application.data.ArticleData;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping(path = "/articles/{slug}")
 @AllArgsConstructor
@@ -31,13 +34,22 @@ public class ArticleApi {
   private ArticleQueryService articleQueryService;
   private ArticleRepository articleRepository;
   private ArticleCommandService articleCommandService;
+  private StatisticsQueryService statisticsQueryService;
 
   @GetMapping
   public ResponseEntity<?> article(
       @PathVariable("slug") String slug, @AuthenticationPrincipal User user) {
     return articleQueryService
         .findBySlug(slug, user)
-        .map(articleData -> ResponseEntity.ok(articleResponse(articleData)))
+        .map(
+            articleData -> {
+              try {
+                statisticsQueryService.recordView(articleData.getId(), user);
+              } catch (Exception e) {
+                log.warn("Failed to record article view", e);
+              }
+              return ResponseEntity.ok(articleResponse(articleData));
+            })
         .orElseThrow(ResourceNotFoundException::new);
   }
 

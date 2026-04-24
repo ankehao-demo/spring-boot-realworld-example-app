@@ -8,6 +8,7 @@ import { ArticleEditor } from './pages/ArticleEditor';
 import { ArticleView } from './pages/ArticleView';
 import { Profile } from './pages/Profile';
 import { Settings } from './pages/Settings';
+import { Statistics } from './pages/Statistics';
 import { AuthProvider, useAuth } from './hooks/useAuth';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -34,6 +35,7 @@ const AppContent = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/article/:slug" element={<ArticleView />} />
+          <Route path="/statistics" element={<Statistics />} />
           <Route path="/profile/:username" element={<Profile />} />
           <Route
             path="/editor"

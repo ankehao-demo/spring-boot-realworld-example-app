@@ -8,7 +8,8 @@ import type {
   RegisterData,
   NewArticle,
   UpdateUser,
-  ArticlesParams
+  ArticlesParams,
+  ArticleStatistics
 } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080';
@@ -129,6 +130,13 @@ export const tagsApi = {
   getTags: async (): Promise<string[]> => {
     const response = await api.get('/tags');
     return (response.data as any).tags;
+  },
+};
+
+export const statisticsApi = {
+  getArticleStatistics: async (): Promise<ArticleStatistics[]> => {
+    const response = await api.get('/statistics/articles');
+    return (response.data as any).statistics;
   },
 };
 

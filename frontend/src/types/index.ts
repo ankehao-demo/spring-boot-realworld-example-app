@@ -76,3 +76,18 @@ export interface ArticlesParams {
   limit?: number;
   offset?: number;
 }
+
+export interface ArticleStatistics {
+  articleId: string;
+  slug: string;
+  title: string;
+  authorUsername: string;
+  viewCount: number;
+  favoritesCount: number;
+  commentsCount: number;
+  createdAt: string;
+  wordCount: number;
+  readTimeMinutes: number;
+  engagementRate: number;
+  trendingScore: number;
+}
