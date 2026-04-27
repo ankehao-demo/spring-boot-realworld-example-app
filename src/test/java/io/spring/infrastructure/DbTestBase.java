@@ -4,8 +4,10 @@ import org.mybatis.spring.boot.test.autoconfigure.MybatisTest;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.jdbc.Sql;
 
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @MybatisTest
+@Sql(scripts = "/cleanup.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public abstract class DbTestBase {}
